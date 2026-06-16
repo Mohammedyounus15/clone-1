@@ -1,0 +1,765 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--orange:#e85d00;--orange-lt:#fff3ed;--green:#1a7a4e;--green-lt:#e8f5ee;--red:#c0392b;--red-lt:#feecec;--amber:#b36b00;--amber-lt:#fef3e2;--sidebar:#1a2744}
+.app{display:flex;height:700px;font-family:var(--font-sans);overflow:hidden;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg)}
+.sb{width:210px;background:var(--sidebar);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sb-logo{padding:14px 14px 12px;border-bottom:0.5px solid rgba(255,255,255,.1)}
+.sb-brand{font-size:17px;font-weight:500;color:#fff}
+.sb-sub{font-size:10px;color:rgba(255,255,255,.4);margin-top:1px}
+.sb-sec{padding:8px 0}
+.sb-lbl{font-size:9px;color:rgba(255,255,255,.3);padding:5px 14px 3px;letter-spacing:.08em;text-transform:uppercase}
+.nav{display:flex;align-items:center;gap:9px;padding:8px 14px;font-size:12px;color:rgba(255,255,255,.65);cursor:pointer;border-left:3px solid transparent;transition:all .15s}
+.nav:hover{background:rgba(255,255,255,.07);color:#fff}
+.nav.on{background:rgba(232,93,0,.15);color:#ff8c3a;border-left-color:#ff8c3a}
+.nav i{font-size:15px}
+.sb-foot{margin-top:auto;padding:12px 14px;border-top:0.5px solid rgba(255,255,255,.1)}
+.sb-biz{font-size:12px;color:rgba(255,255,255,.75);font-weight:500}
+.sb-gst{font-size:10px;color:rgba(255,255,255,.35);margin-top:2px}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--color-background-tertiary)}
+.topbar{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:0 16px;height:48px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-title{font-size:15px;font-weight:500;color:var(--color-text-primary)}
+.content{flex:1;overflow-y:auto;padding:16px}
+.page{display:none}
+.page.on{display:block}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.mc{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px 14px}
+.mc-ico{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;margin-bottom:8px;font-size:15px}
+.mc-lbl{font-size:10px;color:var(--color-text-secondary);margin-bottom:4px}
+.mc-val{font-size:18px;font-weight:500;color:var(--color-text-primary)}
+.mc-sub{font-size:10px;color:var(--color-text-secondary);margin-top:2px}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);margin-bottom:14px}
+.ch{padding:12px 14px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between}
+.ct{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.cb{padding:0}
+.row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:0.5px solid var(--color-border-tertiary);font-size:12px}
+.row:last-child{border-bottom:none}
+.rn{font-weight:500;color:var(--color-text-primary)}
+.rs{font-size:10px;color:var(--color-text-secondary);margin-top:2px}
+.btn{border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);padding:6px 12px;border-radius:var(--border-radius-md);font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-family:var(--font-sans)}
+.btn:hover{background:var(--color-background-secondary)}
+.btn-o{background:var(--orange);color:#fff;border-color:var(--orange)}
+.btn-o:hover{background:#cc5200}
+.btn-g{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-g:hover{background:#145f3c}
+.btn-r{background:var(--red);color:#fff;border-color:var(--red)}
+.btn-sm{padding:4px 9px;font-size:11px}
+.badge{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500}
+.b-paid{background:var(--green-lt);color:var(--green)}
+.b-due{background:var(--amber-lt);color:var(--amber)}
+.b-over{background:var(--red-lt);color:var(--red)}
+.b-low{background:var(--amber-lt);color:var(--amber)}
+.b-crit{background:var(--red-lt);color:var(--red)}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+.tbl th{background:var(--color-background-secondary);padding:8px 12px;text-align:left;font-weight:500;font-size:10px;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary)}
+.tbl td{padding:9px 12px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);word-break:break-word}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--color-background-secondary)}
+.cr{color:var(--green);font-weight:500}
+.dr{color:var(--red);font-weight:500}
+.inp{border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:7px 10px;font-size:12px;color:var(--color-text-primary);background:var(--color-background-primary);font-family:var(--font-sans);width:100%}
+.inp:focus{outline:none;border-color:var(--orange)}
+.lbl{font-size:11px;color:var(--color-text-secondary);font-weight:500;margin-bottom:4px;display:block}
+.fg{margin-bottom:12px}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.sep{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:14px 0}
+.toast-wrap{position:absolute;top:12px;right:12px;z-index:999;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.toast{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:9px 14px;font-size:12px;color:var(--color-text-primary);min-width:200px;font-family:var(--font-sans);animation:fadeIn .2s}
+.toast.ok{border-left:3px solid var(--green)}
+.toast.err{border-left:3px solid var(--red)}
+.toast.info{border-left:3px solid var(--orange)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.modal-bg{display:none;position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center}
+.modal-bg.show{display:flex}
+.modal{background:var(--color-background-primary);border-radius:var(--border-radius-lg);padding:20px;width:460px;max-height:580px;overflow-y:auto;position:relative}
+.modal h3{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:14px}
+.modal-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.itbl{width:100%;border-collapse:collapse;font-size:12px;margin:10px 0}
+.itbl th{background:var(--color-background-secondary);padding:6px 8px;text-align:left;font-size:10px;font-weight:500;color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)}
+.itbl td{padding:5px 6px;border:0.5px solid var(--color-border-tertiary)}
+.itbl td input,.itbl td select{border:none;background:transparent;font-size:12px;color:var(--color-text-primary);font-family:var(--font-sans);width:100%;outline:none}
+.tot-box{display:flex;justify-content:flex-end;margin-top:8px}
+.tot-inner{width:220px}
+.tot-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;color:var(--color-text-secondary)}
+.tot-grand{font-size:13px;font-weight:500;color:var(--color-text-primary);border-top:0.5px solid var(--color-border-secondary);padding-top:6px;margin-top:4px;display:flex;justify-content:space-between}
+.bars{display:flex;align-items:flex-end;gap:6px;height:100px;padding:0 14px}
+.bw{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%;justify-content:flex-end}
+.bar-s{background:var(--orange);border-radius:3px 3px 0 0}
+.bar-p{background:var(--green);border-radius:3px 3px 0 0;opacity:.75}
+.bl{font-size:9px;color:var(--color-text-secondary);margin-top:3px}
+.legend{display:flex;gap:12px;padding:6px 14px 10px;font-size:10px;color:var(--color-text-secondary)}
+.ld{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px}
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+</style>
+
+<h2 class="sr-only">Vyapar business accounting app — fully interactive</h2>
+
+<div class="app" style="position:relative">
+<div class="toast-wrap" id="toasts"></div>
+
+<div class="sb">
+  <div class="sb-logo">
+    <div class="sb-brand"><i class="ti ti-building-store" style="color:#ff8c3a;margin-right:5px"></i>Vyapar</div>
+    <div class="sb-sub">Business Accounting</div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">Main</div>
+    <div class="nav on" onclick="go('dash',this)"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
+    <div class="nav" onclick="go('invoice',this)"><i class="ti ti-file-invoice"></i>Sale invoice</div>
+    <div class="nav" onclick="go('purchase',this)"><i class="ti ti-shopping-cart"></i>Purchase</div>
+    <div class="nav" onclick="go('parties',this)"><i class="ti ti-users"></i>Parties</div>
+    <div class="nav" onclick="go('items',this)"><i class="ti ti-package"></i>Items</div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">Finance</div>
+    <div class="nav" onclick="go('cash',this)"><i class="ti ti-coin"></i>Cash & bank</div>
+    <div class="nav" onclick="go('expense',this)"><i class="ti ti-receipt"></i>Expenses</div>
+  </div>
+  <div class="sb-foot">
+    <div class="sb-biz">Sharma Traders</div>
+    <div class="sb-gst">GSTIN: 27AAPCS1234A1Z5</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="ptitle">Dashboard</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn btn-o" onclick="go('invoice',document.querySelectorAll('.nav')[1])"><i class="ti ti-plus"></i> New invoice</button>
+      <div style="width:30px;height:30px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:500">ST</div>
+    </div>
+  </div>
+
+  <div class="content" id="content">
+
+  <div class="page on" id="pg-dash">
+    <div class="metrics" id="metrics"></div>
+    <div class="twocol">
+      <div class="card">
+        <div class="ch"><div class="ct">Sales vs purchase</div></div>
+        <div class="bars" id="chart-bars"></div>
+        <div class="legend"><span><span class="ld" style="background:var(--orange)"></span>Sales</span><span><span class="ld" style="background:var(--green)"></span>Purchase</span></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Recent transactions</div></div>
+        <div class="cb" id="recent-tx"></div>
+      </div>
+    </div>
+    <div class="twocol">
+      <div class="card">
+        <div class="ch"><div class="ct">Top customers</div></div>
+        <div class="cb" id="top-cust"></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Low stock alert</div></div>
+        <div class="cb" id="low-stock"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" id="pg-invoice">
+    <div class="card" style="padding:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div style="font-size:14px;font-weight:500;color:var(--color-text-primary)">New sale invoice</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="previewInv()"><i class="ti ti-eye"></i> Preview</button>
+          <button class="btn btn-o" onclick="saveInv()"><i class="ti ti-device-floppy"></i> Save invoice</button>
+        </div>
+      </div>
+      <div class="fg2">
+        <div class="fg"><label class="lbl">Party name *</label>
+          <select class="inp" id="inv-party"><option value="">— select customer —</option></select></div>
+        <div class="fg"><label class="lbl">Invoice #</label><input class="inp" id="inv-num" value="INV-046"></div>
+        <div class="fg"><label class="lbl">Invoice date</label><input class="inp" type="date" id="inv-date"></div>
+        <div class="fg"><label class="lbl">Due date</label><input class="inp" type="date" id="inv-due"></div>
+        <div class="fg"><label class="lbl">State of supply</label>
+          <select class="inp" id="inv-state"><option>Maharashtra</option><option>Gujarat</option><option>Delhi</option><option>Karnataka</option><option>Tamil Nadu</option></select></div>
+        <div class="fg"><label class="lbl">Payment mode</label>
+          <select class="inp" id="inv-pmode"><option>Cash</option><option>Bank transfer</option><option>UPI</option><option>Cheque</option></select></div>
+      </div>
+      <hr class="sep">
+      <table class="itbl">
+        <thead><tr><th style="width:32%">Item</th><th style="width:10%">Qty</th><th style="width:10%">Unit</th><th style="width:14%">Rate ₹</th><th style="width:10%">GST%</th><th style="width:14%">Amount ₹</th><th style="width:10%"></th></tr></thead>
+        <tbody id="inv-items"></tbody>
+      </table>
+      <button class="btn btn-sm" onclick="addInvRow()" style="margin-bottom:12px"><i class="ti ti-plus"></i> Add item</button>
+      <div class="tot-box"><div class="tot-inner" id="inv-totals"></div></div>
+      <hr class="sep">
+      <div class="fg3">
+        <div class="fg"><label class="lbl">Amount received ₹</label><input class="inp" id="inv-recv" type="number" placeholder="0" oninput="calcInv()"></div>
+        <div class="fg"><label class="lbl">Balance due ₹</label><input class="inp" id="inv-bal" readonly style="background:var(--color-background-secondary)"></div>
+        <div class="fg"><label class="lbl">Notes</label><input class="inp" id="inv-note" placeholder="e.g. Thank you!"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" id="pg-purchase">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+      <button class="btn btn-o" onclick="openModal('m-addpur')"><i class="ti ti-plus"></i> Add purchase bill</button>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">Purchase bills</div></div>
+      <table class="tbl" id="pur-tbl">
+        <thead><tr><th style="width:12%">Bill #</th><th style="width:22%">Supplier</th><th style="width:15%">Date</th><th style="width:15%">Due date</th><th style="width:15%">Amount</th><th style="width:11%">Status</th><th style="width:10%">Action</th></tr></thead>
+        <tbody id="pur-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="page" id="pg-parties">
+    <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-o" id="tab-cust" onclick="partyTab('cust')">Customers</button>
+        <button class="btn" id="tab-supp" onclick="partyTab('supp')">Suppliers</button>
+      </div>
+      <button class="btn btn-g" onclick="openAddParty()"><i class="ti ti-plus"></i> Add party</button>
+    </div>
+    <div class="card">
+      <div class="ch">
+        <div class="ct" id="party-title">All customers</div>
+        <input class="inp" style="width:180px" placeholder="Search…" oninput="filterParties(this.value)">
+      </div>
+      <table class="tbl" id="party-tbl">
+        <thead><tr><th>Name</th><th>Phone</th><th>GSTIN</th><th>Balance</th><th>Actions</th></tr></thead>
+        <tbody id="party-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="page" id="pg-items">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+      <button class="btn btn-o" onclick="openModal('m-additem')"><i class="ti ti-plus"></i> Add item</button>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">Inventory</div><input class="inp" style="width:180px" placeholder="Search items…" oninput="filterItems(this.value)"></div>
+      <table class="tbl" id="item-tbl">
+        <thead><tr><th>Item</th><th>Unit</th><th>Sale ₹</th><th>Purchase ₹</th><th>GST%</th><th>Stock</th><th>Actions</th></tr></thead>
+        <tbody id="item-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="page" id="pg-cash">
+    <div class="metrics" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px" id="cash-metrics"></div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+      <button class="btn btn-o" onclick="openModal('m-addtx')"><i class="ti ti-plus"></i> Add transaction</button>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">Cash & bank ledger</div></div>
+      <table class="tbl">
+        <thead><tr><th>Date</th><th>Description</th><th>Type</th><th>Amount</th><th>Balance</th></tr></thead>
+        <tbody id="cash-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="page" id="pg-expense">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+      <button class="btn btn-o" onclick="openModal('m-addexp')"><i class="ti ti-plus"></i> Add expense</button>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">Expenses</div></div>
+      <table class="tbl">
+        <thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th><th>Actions</th></tr></thead>
+        <tbody id="exp-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  </div>
+</div>
+</div>
+
+<!-- modals -->
+<div class="modal-bg" id="m-addparty">
+  <div class="modal">
+    <button onclick="closeModal('m-addparty')" style="position:absolute;top:12px;right:12px;border:none;background:none;font-size:18px;cursor:pointer;color:var(--color-text-secondary)"><i class="ti ti-x"></i></button>
+    <h3 id="m-party-title">Add new party</h3>
+    <div class="fg"><label class="lbl">Type</label>
+      <select class="inp" id="np-type"><option value="cust">Customer</option><option value="supp">Supplier</option></select></div>
+    <div class="fg2">
+      <div class="fg"><label class="lbl">Name *</label><input class="inp" id="np-name" placeholder="Party name"></div>
+      <div class="fg"><label class="lbl">Phone</label><input class="inp" id="np-phone" placeholder="10-digit mobile"></div>
+    </div>
+    <div class="fg2">
+      <div class="fg"><label class="lbl">GSTIN</label><input class="inp" id="np-gst" placeholder="Optional"></div>
+      <div class="fg"><label class="lbl">City</label><input class="inp" id="np-city" placeholder="City"></div>
+    </div>
+    <div class="fg"><label class="lbl">Opening balance ₹</label><input class="inp" id="np-bal" type="number" placeholder="0"></div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('m-addparty')">Cancel</button>
+      <button class="btn btn-g" onclick="saveParty()"><i class="ti ti-check"></i> Save party</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="m-additem">
+  <div class="modal">
+    <button onclick="closeModal('m-additem')" style="position:absolute;top:12px;right:12px;border:none;background:none;font-size:18px;cursor:pointer;color:var(--color-text-secondary)"><i class="ti ti-x"></i></button>
+    <h3>Add inventory item</h3>
+    <div class="fg2">
+      <div class="fg"><label class="lbl">Item name *</label><input class="inp" id="ni-name" placeholder="e.g. Cotton Fabric"></div>
+      <div class="fg"><label class="lbl">Category</label><input class="inp" id="ni-cat" placeholder="e.g. Textile"></div>
+    </div>
+    <div class="fg3">
+      <div class="fg"><label class="lbl">Unit</label><input class="inp" id="ni-unit" placeholder="Rolls / Pcs / Kg"></div>
+      <div class="fg"><label class="lbl">Sale price ₹</label><input class="inp" id="ni-sale" type="number" placeholder="0"></div>
+      <div class="fg"><label class="lbl">Purchase price ₹</label><input class="inp" id="ni-pur" type="number" placeholder="0"></div>
+    </div>
+    <div class="fg2">
+      <div class="fg"><label class="lbl">GST %</label>
+        <select class="inp" id="ni-gst"><option>0</option><option>5</option><option selected>12</option><option>18</option><option>28</option></select></div>
+      <div class="fg"><label class="lbl">Opening stock</label><input class="inp" id="ni-stock" type="number" placeholder="0"></div>
+    </div>
+    <div class="fg"><label class="lbl">Min stock alert level</label><input class="inp" id="ni-min" type="number" placeholder="0"></div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('m-additem')">Cancel</button>
+      <button class="btn btn-g" onclick="saveItem()"><i class="ti ti-check"></i> Add item</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="m-addpur">
+  <div class="modal">
+    <button onclick="closeModal('m-addpur')" style="position:absolute;top:12px;right:12px;border:none;background:none;font-size:18px;cursor:pointer;color:var(--color-text-secondary)"><i class="ti ti-x"></i></button>
+    <h3>Add purchase bill</h3>
+    <div class="fg2">
+      <div class="fg"><label class="lbl">Supplier *</label>
+        <select class="inp" id="pur-sup"></select></div>
+      <div class="fg"><label class="lbl">Bill #</label><input class="inp" id="pur-num"></div>
+      <div class="fg"><label class="lbl">Bill date</label><input class="inp" type="date" id="pur-date"></div>
+      <div class="fg"><label class="lbl">Due date</label><input class="inp" type="date" id="pur-due"></div>
+    </div>
+    <div class="fg2">
+      <div class="fg"><label class="lbl">Total amount ₹ *</label><input class="inp" id="pur-amt" type="number" placeholder="0"></div>
+      <div class="fg"><label class="lbl">Amount paid ₹</label><input class="inp" id="pur-paid" type="number" placeholder="0"></div>
+    </div>
+    <div class="fg"><label class="lbl">Notes</label><input class="inp" id="pur-note" placeholder="Optional"></div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('m-addpur')">Cancel</button>
+      <button class="btn btn-g" onclick="savePurchase()">Save bill</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="m-addtx">
+  <div class="modal">
+    <button onclick="closeModal('m-addtx')" style="position:absolute;top:12px;right:12px;border:none;background:none;font-size:18px;cursor:pointer;color:var(--color-text-secondary)"><i class="ti ti-x"></i></button>
+    <h3>Add cash/bank transaction</h3>
+    <div class="fg2">
+      <div class="fg"><label class="lbl">Type</label>
+        <select class="inp" id="tx-type"><option value="in">Cash in</option><option value="out">Cash out</option></select></div>
+      <div class="fg"><label class="lbl">Amount ₹ *</label><input class="inp" id="tx-amt" type="number" placeholder="0"></div>
+    </div>
+    <div class="fg"><label class="lbl">Description *</label><input class="inp" id="tx-desc" placeholder="e.g. Received from Raj Electronics"></div>
+    <div class="fg"><label class="lbl">Date</label><input class="inp" type="date" id="tx-date"></div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('m-addtx')">Cancel</button>
+      <button class="btn btn-g" onclick="saveTx()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="m-addexp">
+  <div class="modal">
+    <button onclick="closeModal('m-addexp')" style="position:absolute;top:12px;right:12px;border:none;background:none;font-size:18px;cursor:pointer;color:var(--color-text-secondary)"><i class="ti ti-x"></i></button>
+    <h3>Add expense</h3>
+    <div class="fg2">
+      <div class="fg"><label class="lbl">Category</label>
+        <select class="inp" id="exp-cat"><option>Rent</option><option>Electricity</option><option>Salaries</option><option>Transport</option><option>Maintenance</option><option>Other</option></select></div>
+      <div class="fg"><label class="lbl">Amount ₹ *</label><input class="inp" id="exp-amt" type="number" placeholder="0"></div>
+    </div>
+    <div class="fg"><label class="lbl">Description</label><input class="inp" id="exp-desc" placeholder="Details…"></div>
+    <div class="fg"><label class="lbl">Date</label><input class="inp" type="date" id="exp-date"></div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('m-addexp')">Cancel</button>
+      <button class="btn btn-g" onclick="saveExp()">Save expense</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="m-preview">
+  <div class="modal" style="width:500px">
+    <button onclick="closeModal('m-preview')" style="position:absolute;top:12px;right:12px;border:none;background:none;font-size:18px;cursor:pointer;color:var(--color-text-secondary)"><i class="ti ti-x"></i></button>
+    <div id="preview-content"></div>
+    <div class="modal-foot"><button class="btn" onclick="closeModal('m-preview')">Close</button></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="m-confirm">
+  <div class="modal" style="width:320px">
+    <h3 id="confirm-title">Confirm delete</h3>
+    <p id="confirm-msg" style="font-size:12px;color:var(--color-text-secondary);margin-bottom:16px"></p>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('m-confirm')">Cancel</button>
+      <button class="btn btn-r" id="confirm-ok">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var D={
+  nextInv:46, nextPur:13,
+  parties:[
+    {id:1,type:'cust',name:'Raj Electronics',phone:'9876543210',gst:'27AAPCS5678A1Z5',city:'Pune',bal:18500},
+    {id:2,type:'cust',name:'Suresh Traders',phone:'9765432109',gst:'27BBBPS4321B1Z2',city:'Mumbai',bal:32000},
+    {id:3,type:'cust',name:'Patel & Sons',phone:'9654321098',gst:'27CCCPS9876C1Z3',city:'Nashik',bal:14750},
+    {id:4,type:'cust',name:'Kapoor Store',phone:'9543210987',gst:'',city:'Thane',bal:0},
+    {id:5,type:'supp',name:'Meena Fabrics',phone:'9123456789',gst:'24FABMS1234F1Z1',city:'Surat',bal:0},
+    {id:6,type:'supp',name:'Om Suppliers',phone:'9234567890',gst:'27OMSP9876O1Z4',city:'Mumbai',bal:22400},
+    {id:7,type:'supp',name:'Tata Fabrics',phone:'9345678901',gst:'24TATFS5432T1Z6',city:'Ahmedabad',bal:34000}
+  ],
+  items:[
+    {id:1,name:'Cotton Fabric (White)',cat:'Textile',unit:'Rolls',sale:850,pur:620,gst:12,stock:12,min:50},
+    {id:2,name:'Polyester Thread',cat:'Accessories',unit:'Spools',sale:120,pur:85,gst:12,stock:28,min:100},
+    {id:3,name:'Silk Fabric',cat:'Textile',unit:'Metres',sale:450,pur:310,gst:5,stock:240,min:50},
+    {id:4,name:'Buttons (Large)',cat:'Accessories',unit:'Pieces',sale:3.5,pur:2,gst:18,stock:180,min:500},
+    {id:5,name:'Zip Fasteners',cat:'Accessories',unit:'Pieces',sale:12,pur:8,gst:18,stock:35,min:200},
+    {id:6,name:'Denim Fabric',cat:'Textile',unit:'Metres',sale:280,pur:190,gst:12,stock:560,min:100}
+  ],
+  invoices:[
+    {id:45,party:'Raj Electronics',date:'2026-06-14',due:'2026-06-28',total:18500,recv:18500,status:'paid'},
+    {id:44,party:'Suresh Traders',date:'2026-06-10',due:'2026-06-24',total:32000,recv:0,status:'due'},
+    {id:43,party:'Patel & Sons',date:'2026-06-08',due:'2026-06-15',total:14750,recv:0,status:'overdue'}
+  ],
+  purchases:[
+    {id:'PUR-012',sup:'Meena Fabrics',date:'2026-06-12',due:'2026-06-27',amt:9200,paid:9200,status:'paid'},
+    {id:'PUR-011',sup:'Om Suppliers',date:'2026-06-05',due:'2026-06-20',amt:22400,paid:0,status:'due'},
+    {id:'PUR-010',sup:'Tata Fabrics',date:'2026-05-28',due:'2026-06-12',amt:34000,paid:0,status:'overdue'}
+  ],
+  cash:[
+    {date:'2026-06-14',desc:'Received — Raj Electronics',type:'in',amt:18500},
+    {date:'2026-06-13',desc:'Paid — Om Suppliers',type:'out',amt:8000},
+    {date:'2026-06-11',desc:'Received — Kapoor Store',type:'in',amt:22000},
+    {date:'2026-06-10',desc:'Office rent',type:'out',amt:12000},
+    {date:'2026-06-08',desc:'Received — Patel & Sons (part)',type:'in',amt:10000}
+  ],
+  expenses:[
+    {id:1,date:'2026-06-10',cat:'Rent',desc:'Monthly shop rent',amt:12000},
+    {id:2,date:'2026-06-05',cat:'Electricity',desc:'May bill',amt:3400},
+    {id:3,date:'2026-06-01',cat:'Salaries',desc:'Staff salary',amt:25000}
+  ],
+  invRows:[],
+  curPartyTab:'cust',
+  nextPartyId:10,nextItemId:10,nextExpId:10
+};
+
+var fmt=n=>('₹'+Math.round(n).toLocaleString('en-IN'));
+var today=()=>new Date().toISOString().split('T')[0];
+var fmtD=s=>{try{return new Date(s).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}catch(e){return s}};
+
+function toast(msg,type='ok'){
+  var t=document.createElement('div');
+  t.className='toast '+type;t.textContent=msg;
+  document.getElementById('toasts').appendChild(t);
+  setTimeout(()=>t.remove(),3000);
+}
+function openModal(id){document.getElementById(id).classList.add('show')}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+
+function go(page,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nav').forEach(n=>n.classList.remove('on'));
+  document.getElementById('pg-'+page).classList.add('on');
+  if(el)el.classList.add('on');
+  var titles={dash:'Dashboard',invoice:'New sale invoice',purchase:'Purchase',parties:'Parties',items:'Items',cash:'Cash & bank',expense:'Expenses'};
+  document.getElementById('ptitle').textContent=titles[page]||page;
+  if(page==='dash')renderDash();
+  if(page==='purchase')renderPurchase();
+  if(page==='parties')renderParties();
+  if(page==='items')renderItems();
+  if(page==='cash')renderCash();
+  if(page==='expense')renderExp();
+  if(page==='invoice')initInvoice();
+}
+
+function renderDash(){
+  var totalSale=D.invoices.reduce((a,i)=>a+i.total,0);
+  var recv=D.invoices.filter(i=>i.status!=='paid').reduce((a,i)=>a+(i.total-i.recv),0);
+  var payable=D.purchases.filter(p=>p.status!=='paid').reduce((a,p)=>a+(p.amt-p.paid),0);
+  var cash=D.cash.reduce((a,t)=>a+(t.type==='in'?t.amt:-t.amt),38450);
+  document.getElementById('metrics').innerHTML=`
+    <div class="mc"><div class="mc-ico" style="background:var(--orange-lt)"><i class="ti ti-trending-up" style="color:var(--orange)"></i></div><div class="mc-lbl">Total sales</div><div class="mc-val" style="color:var(--green)">${fmt(totalSale)}</div><div class="mc-sub">${D.invoices.length} invoices</div></div>
+    <div class="mc"><div class="mc-ico" style="background:var(--green-lt)"><i class="ti ti-coin" style="color:var(--green)"></i></div><div class="mc-lbl">Cash in hand</div><div class="mc-val">${fmt(cash)}</div><div class="mc-sub">Updated today</div></div>
+    <div class="mc"><div class="mc-ico" style="background:var(--red-lt)"><i class="ti ti-clock-exclamation" style="color:var(--red)"></i></div><div class="mc-lbl">Total receivable</div><div class="mc-val" style="color:var(--red)">${fmt(recv)}</div><div class="mc-sub">Pending from customers</div></div>
+    <div class="mc"><div class="mc-ico" style="background:var(--amber-lt)"><i class="ti ti-receipt" style="color:var(--amber)"></i></div><div class="mc-lbl">Total payable</div><div class="mc-val" style="color:var(--amber)">${fmt(payable)}</div><div class="mc-sub">To suppliers</div></div>`;
+  var months=['Jan','Feb','Mar','Apr','May','Jun'];
+  var sSales=[180,240,160,290,310,totalSale/1000];
+  var sPur=[120,160,100,200,180,80];
+  var mxS=Math.max(...sSales);
+  document.getElementById('chart-bars').innerHTML=months.map((m,i)=>`<div class="bw"><div class="bar-s" style="height:${Math.round(sSales[i]/mxS*80)}px;width:100%"></div><div class="bar-p" style="height:${Math.round(sPur[i]/mxS*80)}px;width:100%"></div><div class="bl">${m}</div></div>`).join('');
+  var tx=D.invoices.slice(0,3).concat(D.purchases.slice(0,2));
+  document.getElementById('recent-tx').innerHTML=D.invoices.slice(0,4).map(i=>`<div class="row"><div><div class="rn">${i.party}</div><div class="rs">INV-${i.id} · ${fmtD(i.date)}</div></div><div style="text-align:right"><div class="cr">+${fmt(i.total)}</div><span class="badge b-${i.status}">${i.status.charAt(0).toUpperCase()+i.status.slice(1)}</span></div></div>`).join('');
+  var custSales={};D.invoices.forEach(i=>{custSales[i.party]=(custSales[i.party]||0)+i.total});
+  document.getElementById('top-cust').innerHTML=Object.entries(custSales).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([n,v])=>`<div class="row"><div class="rn">${n}</div><div class="cr">${fmt(v)}</div></div>`).join('');
+  var low=D.items.filter(it=>it.stock<it.min);
+  document.getElementById('low-stock').innerHTML=low.length?low.map(it=>`<div class="row"><div><div class="rn">${it.name}</div><div class="rs">Min: ${it.min} ${it.unit}</div></div><div style="text-align:right"><div style="color:${it.stock<it.min*0.3?'var(--red)':'var(--amber)'};font-weight:500">${it.stock} ${it.unit}</div><span class="badge ${it.stock<it.min*0.3?'b-crit':'b-low'}">${it.stock<it.min*0.3?'Critical':'Low'}</span></div></div>`).join(''):`<div style="padding:20px;text-align:center;font-size:12px;color:var(--color-text-secondary)"><i class="ti ti-check" style="font-size:20px;color:var(--green);display:block;margin-bottom:6px"></i>All stock levels ok!</div>`;
+}
+
+function initInvoice(){
+  var sel=document.getElementById('inv-party');
+  sel.innerHTML='<option value="">— select customer —</option>'+D.parties.filter(p=>p.type==='cust').map(p=>`<option value="${p.name}">${p.name}</option>`).join('');
+  document.getElementById('inv-date').value=today();
+  var due=new Date();due.setDate(due.getDate()+15);
+  document.getElementById('inv-due').value=due.toISOString().split('T')[0];
+  document.getElementById('inv-num').value='INV-'+D.nextInv;
+  document.getElementById('inv-recv').value='';
+  document.getElementById('inv-bal').value='';
+  document.getElementById('inv-note').value='';
+  D.invRows=[{name:'',qty:1,unit:'Pcs',rate:0,gst:12}];
+  renderInvRows();
+}
+
+function renderInvRows(){
+  var tbody=document.getElementById('inv-items');
+  tbody.innerHTML=D.invRows.map((r,i)=>`<tr>
+    <td><select onchange="invItemSel(${i},this)" style="width:100%;border:none;background:transparent;font-size:12px;color:var(--color-text-primary);font-family:var(--font-sans)"><option value="">Custom…</option>${D.items.map(it=>`<option value="${it.id}" ${r._itemId==it.id?'selected':''}>${it.name}</option>`).join('')}</select></td>
+    <td><input type="number" min="0" value="${r.qty}" oninput="updRow(${i},'qty',this.value)"></td>
+    <td><input type="text" value="${r.unit}" oninput="updRow(${i},'unit',this.value)"></td>
+    <td><input type="number" min="0" value="${r.rate}" oninput="updRow(${i},'rate',this.value)"></td>
+    <td><select onchange="updRow(${i},'gst',this.value)"><option ${r.gst==0?'selected':''}>0</option><option ${r.gst==5?'selected':''}>5</option><option ${r.gst==12?'selected':''}>12</option><option ${r.gst==18?'selected':''}>18</option><option ${r.gst==28?'selected':''}>28</option></select></td>
+    <td style="font-weight:500">${fmt(r.qty*r.rate)}</td>
+    <td><button class="btn btn-sm" style="color:var(--red);border-color:transparent" onclick="delInvRow(${i})"><i class="ti ti-trash"></i></button></td>
+  </tr>`).join('');
+  calcInv();
+}
+function invItemSel(i,sel){
+  var it=D.items.find(x=>x.id==sel.value);
+  if(it){D.invRows[i]={...D.invRows[i],name:it.name,unit:it.unit,rate:it.sale,gst:it.gst,_itemId:it.id};}
+  renderInvRows();
+}
+function updRow(i,k,v){D.invRows[i][k]=isNaN(+v)?v:+v;calcInv();}
+function addInvRow(){D.invRows.push({name:'',qty:1,unit:'Pcs',rate:0,gst:12});renderInvRows();}
+function delInvRow(i){if(D.invRows.length===1){toast('At least one item required','err');return;}D.invRows.splice(i,1);renderInvRows();}
+function calcInv(){
+  var sub=D.invRows.reduce((a,r)=>a+r.qty*r.rate,0);
+  var gstAmt=D.invRows.reduce((a,r)=>a+(r.qty*r.rate*r.gst/100),0);
+  var total=sub+gstAmt;
+  var recv=+(document.getElementById('inv-recv').value)||0;
+  document.getElementById('inv-bal').value=Math.max(0,total-recv).toFixed(0);
+  document.getElementById('inv-totals').innerHTML=`
+    <div class="tot-row"><span>Subtotal</span><span>${fmt(sub)}</span></div>
+    <div class="tot-row"><span>GST</span><span>${fmt(gstAmt)}</span></div>
+    <div class="tot-grand"><span>Total</span><span>${fmt(total)}</span></div>`;
+  return {sub,gstAmt,total};
+}
+function saveInv(){
+  var party=document.getElementById('inv-party').value;
+  if(!party){toast('Please select a customer','err');return;}
+  if(D.invRows.every(r=>!r.rate)){toast('Add at least one item with a rate','err');return;}
+  var {total}=calcInv();
+  var recv=+(document.getElementById('inv-recv').value)||0;
+  var inv={id:D.nextInv,party,date:document.getElementById('inv-date').value,due:document.getElementById('inv-due').value,total,recv,status:recv>=total?'paid':recv>0?'due':'due'};
+  D.invoices.unshift(inv);
+  D.nextInv++;
+  toast(`Invoice INV-${inv.id} saved for ${party} — ${fmt(total)}`,'ok');
+  initInvoice();
+}
+function previewInv(){
+  var party=document.getElementById('inv-party').value||'(No customer)';
+  var {sub,gstAmt,total}=calcInv();
+  var rows=D.invRows.map(r=>`<tr><td>${r.name||'Item'}</td><td>${r.qty}</td><td>${r.unit}</td><td>${fmt(r.rate)}</td><td>${r.gst}%</td><td>${fmt(r.qty*r.rate)}</td></tr>`).join('');
+  document.getElementById('preview-content').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+      <div><div style="font-size:16px;font-weight:500;color:var(--color-text-primary)">TAX INVOICE</div><div style="font-size:11px;color:var(--color-text-secondary);margin-top:2px">Sharma Traders · GSTIN: 27AAPCS1234A1Z5</div></div>
+      <div style="text-align:right;font-size:11px;color:var(--color-text-secondary)"><div style="font-weight:500;font-size:13px">${document.getElementById('inv-num').value}</div><div>Date: ${fmtD(document.getElementById('inv-date').value)}</div><div>Due: ${fmtD(document.getElementById('inv-due').value)}</div></div>
+    </div>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 12px;margin-bottom:12px;font-size:12px"><strong>Bill to:</strong> ${party}</div>
+    <table class="tbl" style="margin-bottom:12px"><thead><tr><th>Item</th><th>Qty</th><th>Unit</th><th>Rate</th><th>GST</th><th>Amount</th></tr></thead><tbody>${rows}</tbody></table>
+    <div style="display:flex;justify-content:flex-end"><div style="width:200px">
+      <div class="tot-row"><span>Subtotal</span><span>${fmt(sub)}</span></div>
+      <div class="tot-row"><span>GST</span><span>${fmt(gstAmt)}</span></div>
+      <div class="tot-grand"><span>Grand total</span><span>${fmt(total)}</span></div>
+    </div></div>
+    <div style="margin-top:12px;font-size:11px;color:var(--color-text-secondary);border-top:0.5px solid var(--color-border-tertiary);padding-top:8px">${document.getElementById('inv-note').value||'Thank you for your business!'}</div>`;
+  openModal('m-preview');
+}
+
+function renderPurchase(){
+  var sups=D.parties.filter(p=>p.type==='supp');
+  document.getElementById('pur-sup').innerHTML=sups.map(s=>`<option>${s.name}</option>`).join('');
+  document.getElementById('pur-num').value='PUR-'+D.nextPur;
+  document.getElementById('pur-date').value=today();
+  var due=new Date();due.setDate(due.getDate()+15);
+  document.getElementById('pur-due').value=due.toISOString().split('T')[0];
+  document.getElementById('pur-amt').value='';
+  document.getElementById('pur-paid').value='';
+  document.getElementById('pur-note').value='';
+  renderPurchaseTable();
+}
+function renderPurchaseTable(){
+  document.getElementById('pur-body').innerHTML=D.purchases.map(p=>`<tr>
+    <td>${p.id}</td><td>${p.sup}</td><td>${fmtD(p.date)}</td><td>${fmtD(p.due)}</td>
+    <td class="dr">-${fmt(p.amt)}</td>
+    <td><span class="badge b-${p.status}">${p.status.charAt(0).toUpperCase()+p.status.slice(1)}</span></td>
+    <td><button class="btn btn-sm" onclick="markPurPaid('${p.id}')" ${p.status==='paid'?'disabled style="opacity:.4"':''}><i class="ti ti-check"></i> Pay</button>
+    <button class="btn btn-sm" style="color:var(--red);margin-left:4px" onclick="delPur('${p.id}')"><i class="ti ti-trash"></i></button></td>
+  </tr>`).join('');
+}
+function savePurchase(){
+  var sup=document.getElementById('pur-sup').value;
+  var amt=+(document.getElementById('pur-amt').value);
+  if(!sup||!amt){toast('Supplier and amount required','err');return;}
+  var paid=+(document.getElementById('pur-paid').value)||0;
+  D.purchases.unshift({id:'PUR-'+D.nextPur,sup,date:document.getElementById('pur-date').value,due:document.getElementById('pur-due').value,amt,paid,status:paid>=amt?'paid':'due'});
+  D.nextPur++;
+  closeModal('m-addpur');
+  renderPurchaseTable();
+  toast(`Purchase bill saved — ${fmt(amt)} from ${sup}`,'ok');
+}
+function markPurPaid(id){
+  var p=D.purchases.find(x=>x.id===id);
+  if(p){p.paid=p.amt;p.status='paid';renderPurchaseTable();toast(`${p.id} marked as paid`,'ok');}
+}
+function delPur(id){
+  confirmDel('Delete this purchase bill?','This cannot be undone.',()=>{D.purchases=D.purchases.filter(p=>p.id!==id);renderPurchaseTable();toast('Bill deleted','info');});
+}
+
+var curPartyTab='cust';
+function partyTab(t){
+  curPartyTab=t;
+  document.getElementById('tab-cust').className='btn'+(t==='cust'?' btn-o':'');
+  document.getElementById('tab-supp').className='btn'+(t==='supp'?' btn-o':'');
+  document.getElementById('party-title').textContent=t==='cust'?'All customers':'All suppliers';
+  renderParties();
+}
+function renderParties(filter=''){
+  var list=D.parties.filter(p=>p.type===curPartyTab&&(!filter||p.name.toLowerCase().includes(filter.toLowerCase())));
+  document.getElementById('party-body').innerHTML=list.length?list.map(p=>`<tr>
+    <td><div style="font-weight:500">${p.name}</div><div style="font-size:10px;color:var(--color-text-secondary)">${p.city}</div></td>
+    <td>${p.phone}</td><td style="font-size:10px">${p.gst||'—'}</td>
+    <td style="font-weight:500;color:${p.bal>0?'var(--red)':'var(--green)'}">${p.bal>0?fmt(p.bal)+' to '+(curPartyTab==='cust'?'receive':'pay'):'Settled'}</td>
+    <td><button class="btn btn-sm" onclick="editParty(${p.id})"><i class="ti ti-edit"></i></button>
+    <button class="btn btn-sm" style="color:var(--red);margin-left:4px" onclick="delParty(${p.id})"><i class="ti ti-trash"></i></button></td>
+  </tr>`).join(''):`<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--color-text-secondary);font-size:12px">No ${curPartyTab==='cust'?'customers':'suppliers'} found</td></tr>`;
+}
+function filterParties(v){renderParties(v);}
+function openAddParty(){
+  document.getElementById('m-party-title').textContent='Add new party';
+  document.getElementById('np-name').value='';
+  document.getElementById('np-phone').value='';
+  document.getElementById('np-gst').value='';
+  document.getElementById('np-city').value='';
+  document.getElementById('np-bal').value='';
+  document.getElementById('np-type').value=curPartyTab;
+  openModal('m-addparty');
+}
+function saveParty(){
+  var name=document.getElementById('np-name').value.trim();
+  if(!name){toast('Name is required','err');return;}
+  D.parties.push({id:D.nextPartyId++,type:document.getElementById('np-type').value,name,phone:document.getElementById('np-phone').value,gst:document.getElementById('np-gst').value,city:document.getElementById('np-city').value,bal:+(document.getElementById('np-bal').value)||0});
+  closeModal('m-addparty');
+  renderParties();
+  toast(`${name} added successfully`,'ok');
+}
+function editParty(id){
+  var p=D.parties.find(x=>x.id===id);
+  if(!p)return;
+  document.getElementById('m-party-title').textContent='Edit party';
+  document.getElementById('np-name').value=p.name;
+  document.getElementById('np-phone').value=p.phone;
+  document.getElementById('np-gst').value=p.gst;
+  document.getElementById('np-city').value=p.city;
+  document.getElementById('np-bal').value=p.bal;
+  document.getElementById('np-type').value=p.type;
+  openModal('m-addparty');
+  document.querySelector('#m-addparty .btn-g').onclick=function(){
+    p.name=document.getElementById('np-name').value.trim()||p.name;
+    p.phone=document.getElementById('np-phone').value;
+    p.gst=document.getElementById('np-gst').value;
+    p.city=document.getElementById('np-city').value;
+    p.bal=+(document.getElementById('np-bal').value)||0;
+    closeModal('m-addparty');renderParties();toast('Party updated','ok');
+    this.onclick=saveParty;
+  };
+}
+function delParty(id){
+  var p=D.parties.find(x=>x.id===id);
+  confirmDel('Delete '+p.name+'?','All records linked to this party will remain.',()=>{D.parties=D.parties.filter(x=>x.id!==id);renderParties();toast(p.name+' deleted','info');});
+}
+
+function renderItems(filter=''){
+  document.getElementById('item-body').innerHTML=D.items.filter(it=>!filter||it.name.toLowerCase().includes(filter.toLowerCase())).map(it=>{
+    var low=it.stock<it.min;var crit=it.stock<it.min*0.3;
+    return `<tr>
+      <td><div style="font-weight:500">${it.name}</div><div style="font-size:10px;color:var(--color-text-secondary)">${it.cat}</div></td>
+      <td>${it.unit}</td><td>${fmt(it.sale)}</td><td>${fmt(it.pur)}</td><td>${it.gst}%</td>
+      <td style="color:${crit?'var(--red)':low?'var(--amber)':'var(--green)'};font-weight:500">${it.stock} ${it.unit} ${low?`<span class="badge ${crit?'b-crit':'b-low'}">${crit?'Critical':'Low'}</span>`:''}</td>
+      <td>
+        <button class="btn btn-sm" onclick="adjStock(${it.id})"><i class="ti ti-plus"></i> Stock</button>
+        <button class="btn btn-sm" style="color:var(--red);margin-left:4px" onclick="delItem(${it.id})"><i class="ti ti-trash"></i></button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+function filterItems(v){renderItems(v);}
+function saveItem(){
+  var name=document.getElementById('ni-name').value.trim();
+  if(!name){toast('Item name required','err');return;}
+  D.items.push({id:D.nextItemId++,name,cat:document.getElementById('ni-cat').value,unit:document.getElementById('ni-unit').value||'Pcs',sale:+(document.getElementById('ni-sale').value)||0,pur:+(document.getElementById('ni-pur').value)||0,gst:+(document.getElementById('ni-gst').value)||12,stock:+(document.getElementById('ni-stock').value)||0,min:+(document.getElementById('ni-min').value)||0});
+  closeModal('m-additem');renderItems();toast(name+' added to inventory','ok');
+}
+function adjStock(id){
+  var it=D.items.find(x=>x.id===id);
+  var qty=prompt(`Adjust stock for "${it.name}"\nCurrent: ${it.stock} ${it.unit}\nEnter amount (use - to reduce, e.g. -5):`);
+  if(qty===null)return;
+  var n=parseInt(qty);
+  if(isNaN(n)){toast('Invalid quantity','err');return;}
+  it.stock=Math.max(0,it.stock+n);
+  renderItems();
+  toast(`Stock updated: ${it.name} → ${it.stock} ${it.unit}`,'ok');
+}
+function delItem(id){
+  var it=D.items.find(x=>x.id===id);
+  confirmDel('Delete "'+it.name+'"?','This will remove the item from inventory.',()=>{D.items=D.items.filter(x=>x.id!==id);renderItems();toast(it.name+' deleted','info');});
+}
+
+function renderCash(){
+  var running=38450;
+  var cashAmt=D.cash.reduce((a,t)=>a+(t.type==='in'?t.amt:-t.amt),38450);
+  document.getElementById('cash-metrics').innerHTML=`
+    <div class="mc"><div class="mc-lbl">Cash in hand</div><div class="mc-val" style="color:var(--green)">${fmt(cashAmt)}</div></div>
+    <div class="mc"><div class="mc-lbl">Bank balance (HDFC)</div><div class="mc-val" style="color:var(--green)">₹1,84,200</div></div>
+    <div class="mc"><div class="mc-lbl">Total available</div><div class="mc-val" style="color:var(--green)">${fmt(cashAmt+184200)}</div></div>`;
+  var bal=cashAmt;
+  document.getElementById('cash-body').innerHTML=D.cash.slice().reverse().map(t=>{
+    var row=`<tr><td>${fmtD(t.date)}</td><td>${t.desc}</td><td><span class="badge ${t.type==='in'?'b-paid':'b-over'}">${t.type==='in'?'Cash in':'Cash out'}</span></td><td class="${t.type==='in'?'cr':'dr'}">${t.type==='in'?'+':'-'}${fmt(t.amt)}</td><td style="font-weight:500">${fmt(bal)}</td></tr>`;
+    bal-=(t.type==='in'?t.amt:-t.amt);return row;
+  }).join('');
+  document.getElementById('tx-date').value=today();
+}
+function saveTx(){
+  var desc=document.getElementById('tx-desc').value.trim();
+  var amt=+(document.getElementById('tx-amt').value);
+  if(!desc||!amt){toast('Description and amount required','err');return;}
+  D.cash.unshift({date:document.getElementById('tx-date').value,desc,type:document.getElementById('tx-type').value,amt});
+  closeModal('m-addtx');renderCash();toast('Transaction recorded','ok');
+}
+
+function renderExp(){
+  document.getElementById('exp-date').value=today();
+  document.getElementById('exp-body').innerHTML=D.expenses.map(e=>`<tr>
+    <td>${fmtD(e.date)}</td><td>${e.cat}</td><td>${e.desc}</td><td class="dr">-${fmt(e.amt)}</td>
+    <td><button class="btn btn-sm" style="color:var(--red)" onclick="delExp(${e.id})"><i class="ti ti-trash"></i></button></td>
+  </tr>`).join('');
+}
+function saveExp(){
+  var amt=+(document.getElementById('exp-amt').value);
+  if(!amt){toast('Enter an amount','err');return;}
+  D.expenses.unshift({id:D.nextExpId++,date:document.getElementById('exp-date').value,cat:document.getElementById('exp-cat').value,desc:document.getElementById('exp-desc').value||'',amt});
+  closeModal('m-addexp');renderExp();toast('Expense recorded','ok');
+}
+function delExp(id){
+  confirmDel('Delete this expense?','',()=>{D.expenses=D.expenses.filter(e=>e.id!==id);renderExp();toast('Expense deleted','info');});
+}
+
+function confirmDel(title,msg,cb){
+  document.getElementById('confirm-title').textContent=title;
+  document.getElementById('confirm-msg').textContent=msg;
+  document.getElementById('confirm-ok').onclick=function(){closeModal('m-confirm');cb();};
+  openModal('m-confirm');
+}
+
+renderDash();
+</script>
